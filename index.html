@@ -20,6 +20,7 @@ window.MathJax = {
   --bg:#FBFBF9; --ink:#141414; --ink2:#4E5258; --ink3:#8C9096; --line:#E4E4DF; --soft:#F1F1EC;
   --acc:#1B6AAC; --accs:#E7EFF7; --hot:#C2410C; --hots:#FAEBE3; --ok:#2F7D4F; --oks:#E6F1EA;
   --z1:#1B6AAC; --z2:#8FB3D9; --z3:#C2410C; --z4:#2F7D4F; --z5:#141414;
+  --k1:#C98A12; --k2:#7B3F8C; --k3:#2A8C99;
   --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif; --disp:'Inter Tight','Inter',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -78,6 +79,8 @@ table.t{border-collapse:collapse;width:100%;font-size:.86rem}
 .tscroll{overflow-x:auto}
 .tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.3rem}
 .tabs button{font:inherit;font-size:.78rem;border:1px solid var(--line);background:transparent;color:var(--ink2);padding:.38rem .85rem;border-radius:99px;cursor:pointer;transition:color .15s,background-color .15s,border-color .15s}
+.tabs.mode{margin-top:-.6rem}
+.tabs.mode button{border-radius:6px}
 .tabs button:hover{border-color:var(--ink3)}
 .tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .pill{display:inline-block;font-family:var(--mono);font-size:.68rem;padding:.18rem .55rem;border-radius:99px;background:var(--soft);color:var(--ink2);margin:0 .3rem .3rem 0;white-space:nowrap}
@@ -90,6 +93,8 @@ svg .lbb{fill:var(--ink);font-size:12px;font-weight:600}
 svg .ax{stroke:var(--line);stroke-width:1}
 svg .ax0{stroke:var(--ink);stroke-width:1}
 .legend{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.76rem;color:var(--ink2);margin-top:.7rem}
+.legend .lg-t{font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.legend .lg-sep{width:1px;height:.9rem;background:var(--line);align-self:center}
 .legend i{display:inline-block;width:.75rem;height:.2rem;margin-right:.35rem;vertical-align:middle;border-radius:2px}
 .rng{display:flex;align-items:center;gap:1rem;margin:1rem 0 .3rem}
 .rng input{flex:1;accent-color:var(--acc)}
@@ -526,7 +531,7 @@ svg .ax0{stroke:var(--ink);stroke-width:1}
     <div class="txt">
       <div class="eye r"><b>18</b> Validación del conjunto</div>
       <h2 class="r" style="--d:1">El modelo final frente a sus alternativas</h2>
-      <p class="r" style="--d:2"><strong>A un paso</strong>, el modelo final (4.36 pp) queda por encima de solo masa salarial (3.87 pp) y de la regla ingenua de mantener la participación del último año (3.10 pp).</p>
+      <p class="r" style="--d:2"><strong>A un paso</strong>, el modelo final (4.36 pp) queda por encima de solo masa salarial (3.87 pp).</p>
       <p class="r" style="--d:3"><strong>A varios pasos</strong> la diferencia crece: 5.47 pp frente a 3.76 pp de solo masa. Casi todo viene de Pick-ups (10.02 pp frente a 3.61 pp), donde el modelo con cobre y clima se desvía al encadenar años. En SUV (1.86 pp) y Comerciales (5.63 pp) queda cerca de solo masa. Es el costo de preferir la explicación económica sobre el mínimo error.</p>
     </div>
     <div class="r" style="--d:2">
@@ -547,7 +552,9 @@ svg .ax0{stroke:var(--ink);stroke-width:1}
     </div>
     <div class="r" style="--d:2">
       <div class="tabs" data-tabs="slope"></div>
+      <div class="tabs mode" data-tabs="slopem"></div>
       <div class="chart" id="ch-slope"></div>
+      <p class="note" id="slope-note"></p>
     </div>
   </div>
 </section>
@@ -640,8 +647,8 @@ tabs('[data-tabs="shares"]', segTabs, drawShares, 1);
     {t: "Precio del cobre", u: "centavos de US$ por libra", ser: [{c: "var(--acc)", k: "Precio del cobre (cUS$/lb)"}], cagr: true},
     {t: "PBI manufactura primaria", u: "índice 2010 = 100", ser: [{c: "var(--acc)", k: "PBI manufactura primaria"}], cagr: true},
     {t: "PBI manufactura no primaria", u: "índice 2010 = 100", ser: [{c: "var(--acc)", k: "PBI manufactura no primaria"}], cagr: true},
-    {t: "Anomalía TSM Niño 1+2 (anual)", u: "°C", ser: [{c: "var(--hot)", k: "Anomalia TSM Nino 1+2: promedio de anomalias positivas (C)"}, {c: "var(--ink)", k: "Anomalia TSM Nino 1+2: promedio anual (C)"}], clima: true},
-    {t: "Anomalía TSM Niño 1+2 (enero–abril)", u: "°C", ser: [{c: "var(--acc)", k: "Anomalia TSM Nino 1+2: promedio enero-abril (C)"}], clima: true}
+    {t: "Anomalía TSM Niño 1+2 (anual)", u: "°C", ser: [{c: "var(--k1)", k: "Anomalia TSM Nino 1+2: promedio de anomalias positivas (C)"}, {c: "var(--k2)", k: "Anomalia TSM Nino 1+2: promedio anual (C)"}], clima: true},
+    {t: "Anomalía TSM Niño 1+2 (enero–abril)", u: "°C", ser: [{c: "var(--k3)", k: "Anomalia TSM Nino 1+2: promedio enero-abril (C)"}], clima: true}
   ];
   const cagr = k => { const s = V.series[k], a = s[A.indexOf(2025)], b = s[A.indexOf(2029)]; return ((Math.pow(b / a, 1 / 4) - 1) * 100).toFixed(1).replace("-", "−"); };
   panels.forEach((p, ip) => {
@@ -670,8 +677,8 @@ tabs('[data-tabs="shares"]', segTabs, drawShares, 1);
     ends.forEach(e => T(g, W - m.r + 4, e.y + 4, Math.abs(e.v) >= 100 ? Math.round(e.v).toLocaleString("es-PE") : e.v.toFixed(1), {fill: e.c, "font-size": 10}));
     if (p.clima) [2017, 2023, 2026, 2027].forEach(a => { const v = V.series[p.ser[0].k][A.indexOf(a)]; T(g, x(a), y(v) - 6, v.toFixed(1), {"text-anchor": "middle", class: "lbb", "font-size": 10}); });
   });
-  document.getElementById("lg-vars").innerHTML = Z.map(z => `<span><i style="background:${ZC[z]}"></i>${ZS[z]}</span>`).join("") +
-    `<span><i style="background:var(--hot)"></i>Promedio de anomalías positivas</span><span><i style="background:var(--ink)"></i>Promedio anual</span><span><i style="background:var(--acc)"></i>Enero–abril</span>`;
+  document.getElementById("lg-vars").innerHTML = `<span class="lg-t">Masa salarial</span>` + Z.map(z => `<span><i style="background:${ZC[z]}"></i>${ZS[z]}</span>`).join("") +
+    `<span class="lg-sep"></span><span class="lg-t">Anomalía TSM</span><span><i style="background:var(--k1)"></i>Promedio de anomalías positivas</span><span><i style="background:var(--k2)"></i>Promedio anual</span><span><i style="background:var(--k3)"></i>Enero–abril</span>`;
 })();
 
 /* 05 · equilibrio vs observado */
@@ -805,7 +812,7 @@ tabs("#fintabs", segTabs.slice(1).concat([segTabs[0]]), k => {
 });
 
 /* 25 · validación */
-const VS = [["Error modelo final (pp)", "Modelo final", "var(--acc)"], ["Error alternativa A (pp)", "Alt. A", "var(--z2)"], ["Error alternativa B (pp)", "Alt. B", "#C9CCD1"], ["Error solo masa salarial (pp)", "Solo masa", "#9DA1A7"], ["Error participación último año (pp)", "Mantener 2025", "var(--hot)"]];
+const VS = [["Error modelo final (pp)", "Modelo final", "var(--acc)"], ["Error alternativa A (pp)", "Alt. A", "var(--z2)"], ["Error alternativa B (pp)", "Alt. B", "#C9CCD1"], ["Error solo masa salarial (pp)", "Solo masa", "#9DA1A7"]];
 function drawValid(k) {
   const src = k === "total" ? D.valid_prom : {"un paso": D.valid["un paso"][k], "varios pasos (origen 2022)": D.valid["varios pasos (origen 2022)"][k]};
   const W = 620, H = 320, m = {l: 40, r: 10, t: 20, b: 50}, g = box("ch-valid", W, H), tp = Object.keys(src);
@@ -819,31 +826,50 @@ function drawValid(k) {
       S("rect", {x: xx + 2, y: y(val), width: bw - 4, height: y(0) - y(val), rx: 2, fill: v[2]}, g);
       T(g, xx + bw / 2, y(val) - 5, val.toFixed(2), {"text-anchor": "middle", class: j === 0 ? "lbb" : "lb", "font-size": 10});
     });
-    T(g, x0 + gw * .35, H - 28, t === "un paso" ? "Un paso (2021–2025)" : "Varios pasos (origen 2022)", {"text-anchor": "middle", class: "lbb"});
+    T(g, x0 + gw * .35, H - 28, t === "un paso" ? "Un paso (2021–2025)" : "Varios pasos", {"text-anchor": "middle", class: "lbb"});
   });
   const lg = S("g", {}, g); let lx = m.l;
   VS.forEach(v => { S("rect", {x: lx, y: H - 12, width: 10, height: 10, rx: 2, fill: v[2]}, lg); T(lg, lx + 14, H - 3, v[1]); lx += 14 + v[1].length * 6.2 + 14; });
 }
 tabs('[data-tabs="valid"]', [{key: "total", label: "Promedio"}].concat(segTabs), drawValid);
 
-/* 26 · pendiente 2025-2029 */
-function drawSlope(s) {
-  const W = 560, H = 360, m = {l: 130, r: 130, t: 28, b: 24}, g = box("ch-slope", W, H);
-  const v = Z.map(z => ({z, a: D.part[s][z][i25], b: D.part[s][z][i29]})), mx = Math.max(...v.flatMap(r => [r.a, r.b])) * 1.05;
-  const y = sc(0, mx, H - m.b, m.t), xa = m.l, xb = W - m.r;
-  S("line", {x1: xa, x2: xa, y1: m.t, y2: H - m.b, class: "ax"}, g); S("line", {x1: xb, x2: xb, y1: m.t, y2: H - m.b, class: "ax"}, g);
-  T(g, xa, m.t - 12, "2025", {"text-anchor": "middle", class: "lbb"}); T(g, xb, m.t - 12, "2029", {"text-anchor": "middle", class: "lbb"});
-  const lay = (k) => { const o = v.map(r => ({z: r.z, y: y(r[k]), v: r[k]})).sort((p, q) => p.y - q.y); for (let i = 1; i < o.length; i++) if (o[i].y - o[i - 1].y < 15) o[i].y = o[i - 1].y + 15; return Object.fromEntries(o.map(r => [r.z, r.y])); };
-  const la = lay("a"), lb = lay("b");
-  v.forEach(r => {
-    S("line", {x1: xa, x2: xb, y1: y(r.a), y2: y(r.b), stroke: ZC[r.z], "stroke-width": 2.2}, g);
-    S("circle", {cx: xa, cy: y(r.a), r: 3.5, fill: ZC[r.z]}, g); S("circle", {cx: xb, cy: y(r.b), r: 3.5, fill: ZC[r.z]}, g);
-    T(g, xa - 10, la[r.z] + 4, `${ZS[r.z]} ${pc(r.a)}`, {"text-anchor": "end", class: "lb"});
-    const d = (r.b - r.a) * 100;
-    T(g, xb + 10, lb[r.z] + 4, `${pc(r.b)}  ${d >= 0 ? "+" : "−"}${Math.abs(d).toFixed(1)}`, {class: Math.abs(d) >= 2 ? "lbb" : "lb"});
+/* 26 · reparto 2011-2029: histórico y proyección, en participación o unidades */
+let SLOPE_S = "SUV", SLOPE_M = "part";
+function drawSlope() {
+  const s = SLOPE_S, uni = SLOPE_M === "unid", tot = a => D.unid[s][String(a)];
+  const s0 = AN.indexOf(2011), yrs = AN.slice(s0, i29 + 1);
+  const val = (z, i) => D.part[s][z][i] * (uni ? tot(AN[i]) : 1);
+  const W = 640, H = 380, m = {l: 48, r: 128, t: 16, b: 26}, g = box("ch-slope", W, H);
+  const mx = Math.max(...Z.flatMap(z => yrs.map((a, j) => val(z, s0 + j)))) * 1.06;
+  const x = sc(2011, 2029, m.l, W - m.r), y = sc(0, mx, H - m.b, m.t);
+  const fmt = v => uni ? Math.round(v).toLocaleString("es-PE") : pc(v);
+  S("rect", {x: x(2025), y: m.t, width: x(2029) - x(2025), height: H - m.b - m.t, fill: "var(--soft)"}, g);
+  T(g, (x(2025) + x(2029)) / 2, m.t + 12, "proyección", {"text-anchor": "middle"});
+  const st = uni ? [1000, 2000, 5000, 10000, 20000, 25000, 50000, 100000].find(q => mx / q <= 5) : (mx > .5 ? .2 : .1);
+  for (let v = 0; v <= mx; v += st) {
+    S("line", {x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: v === 0 ? "ax0" : "ax"}, g);
+    T(g, m.l - 6, y(v) + 4, uni ? (v >= 1000 ? (v / 1000).toLocaleString("es-PE") + "k" : v) : Math.round(v * 100) + "%", {"text-anchor": "end"});
+  }
+  [2011, 2015, 2020, 2025, 2029].forEach(a => T(g, x(a), H - 6, a, {"text-anchor": "middle"}));
+  const ends = [];
+  Z.forEach(z => {
+    const pts = yrs.map((a, j) => [a, val(z, s0 + j)]);
+    const pth = (pp, at) => S("path", Object.assign({d: pp.map((p, i) => (i ? "L" : "M") + x(p[0]).toFixed(1) + "," + y(p[1]).toFixed(1)).join(""), fill: "none", stroke: ZC[z], "stroke-width": 2, "stroke-linejoin": "round"}, at), g);
+    pth(pts.filter(p => p[0] <= 2025), {}); pth(pts.filter(p => p[0] >= 2025), {"stroke-dasharray": "4 3"});
+    const a = val(z, i25), b = val(z, i29);
+    S("circle", {cx: x(2025), cy: y(a), r: 3, fill: ZC[z]}, g); S("circle", {cx: x(2029), cy: y(b), r: 3.2, fill: ZC[z]}, g);
+    const d = uni ? `${b >= a ? "+" : "−"}${Math.abs((b / a - 1) * 100).toFixed(0)}%` : `${b >= a ? "+" : "−"}${Math.abs((b - a) * 100).toFixed(1)}`;
+    ends.push({z, y: y(b), t: `${ZS[z]} ${fmt(b)} ${d}`, big: !uni && Math.abs(b - a) >= .02});
   });
+  ends.sort((p, q) => p.y - q.y); for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 13) ends[i].y = ends[i - 1].y + 13;
+  ends.forEach(e => T(g, W - m.r + 8, e.y + 4, e.t, {class: e.big ? "lbb" : "lb"}));
+  const t25 = tot(2025), t29 = tot(2029);
+  document.getElementById("slope-note").textContent = uni
+    ? `Unidades por zona: observadas en 2011–2025 y proyectadas en 2026–2029 (participación proyectada × total nacional del segmento). Total ${SS[s]}: ${Math.round(t25).toLocaleString("es-PE")} en 2025 y ${Math.round(t29).toLocaleString("es-PE")} en 2029 (${t29 >= t25 ? "+" : "−"}${Math.abs((t29 / t25 - 1) * 100).toFixed(0)}%). A la derecha, el valor de 2029 y la variación frente a 2025.`
+    : "Participación de cada zona en el segmento: observada en 2011–2025 y proyectada en 2026–2029. A la derecha, la participación de 2029 y el cambio frente a 2025 en puntos porcentuales.";
 }
-tabs('[data-tabs="slope"]', segTabs, drawSlope, 1);
+tabs('[data-tabs="slope"]', segTabs, k => { SLOPE_S = k; drawSlope(); }, 1);
+tabs('[data-tabs="slopem"]', [{key: "part", label: "Participación (%)"}, {key: "unid", label: "Unidades"}], k => { SLOPE_M = k; drawSlope(); });
 
 /* navegación */
 (function () {
